@@ -13,7 +13,8 @@
 'suppliers from and against any third party claims or lawsuits, including attorneys’ fees, that arise or result  
 'from the use or distribution of the sample code." 
  
-To undelete a container’s soft deleted blobs: 
+'To undelete a container’s soft deleted blobs: 
+
 $storageAccountName = "xxxx" 
 $StorageAccountKey = "xxxx" 
 $storageContainer = "xxxx"  
