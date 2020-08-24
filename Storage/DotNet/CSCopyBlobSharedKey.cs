@@ -28,4 +28,4 @@ destiniationblob.StartCopyFromUri(sourceUri);
 //Check Copy Status
 Console.WriteLine(destiniationblob.GetProperties().Value.CopyStatus.ToString());
 Console.ReadLine();
-////////////////////////////////////
+
