@@ -3,22 +3,22 @@
 > This Code Repository is maintained by the `Azure Developer Support team`. The support engineers from Azure PAAS Developer team will be pushing the code samples and sample scripts to this repository. This repository is meant to `EMPOWER and ENABLE` our community audience and also collaborate with them and take contributions to this open source project.
 
 > This repository contains the sample code for How-To scenarios, proof of concepts and powershell scripts for the below technologies:
--azure-api-management 
--azure-cloud-services 
--azure-policy 
--azure-search 
--azure-arm 
--azure-arm-templates
--azure-blockchain 
--azure-batch
--azure-storage 
--azure-redis-cache 
--azure-service-bus 
--azure-service-fabric
--azure-notificationhub 
--azure-eventhub 
--azure-event-grid 
--azure-relay 
+* azure-api-management 
+* azure-cloud-services 
+* azure-policy 
+* azure-search 
+* azure-arm 
+* azure-arm-templates
+* azure-blockchain 
+* azure-batch
+* azure-storage 
+* azure-redis-cache 
+* azure-service-bus 
+* azure-service-fabric
+* azure-notificationhub 
+* azure-eventhub 
+* azure-event-grid 
+* azure-relay 
 
 
 
