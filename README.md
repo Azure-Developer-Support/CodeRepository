@@ -1,6 +1,6 @@
 # Azure Developer Support - Code Repository
 
-> This Code Repository is maintained by the `Azure Developer Support team`. The support engineers from Azure PAAS Developer team will be pushing the code samples and sample scripts to this repository. This repository is meant to `EMPOWER and ENABLE` our community audience and also collaborate with them and take contributions to this open source project.
+> This Code Repository is maintained by the `Azure Developer Support team`. The support engineers from Azure PAAS Developer team will be pushing the code samples and sample scripts to this repository. This repository is meant to `EMPOWER and ENABLE` our community audience by sharing our knowledge and also collaborate with them and take contributions to this open source project.
 
 > This repository contains the sample code for How-To scenarios, proof of concepts and powershell scripts for the below technologies:
 * azure-api-management 
