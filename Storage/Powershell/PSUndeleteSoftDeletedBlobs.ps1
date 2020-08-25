@@ -27,7 +27,7 @@ do   
 {   
       # get a list of all of the blobs in the container  
 	$Blobs = Get-AzStorageBlob -Container $storageContainer -Context $ctx -IncludeDeleted -MaxCount $MaxReturn  -ContinuationToken $Token 
-	write-host "========================================"   
+	write-host "========================================="   
 	write-host "All Blobs including soft deleted ones: "   
 	$Blobs.Name   
 	$c=0   
