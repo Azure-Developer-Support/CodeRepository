@@ -1,7 +1,7 @@
 #By using the following materials or sample code you agree to be bound by the license terms below 
 #and the Microsoft Partner Program Agreement the terms of which are incorporated herein by this reference. 
 #These license terms are an agreement between Microsoft Corporation (or, if applicable based on where you 
-#are located, one of its affiliates) and you. Any materials (other than sample code) we provide to you 
+#are located, one of its affiliates) and you. Any materials (other than sample code) we provide to you  
 #are for your internal use only. Any sample code is provided for the purpose of illustration only and is 
 #not intended to be used in a production environment. We grant you a nonexclusive, royalty-free right to 
 #use and modify the sample code and to reproduce and distribute the object code form of the sample code, 
