@@ -1,4 +1,4 @@
-# Azure Developer Support - Code Repository
+# Azure PaaS Developer - Code Repository
 
 > This is a Open Source Platform meant to `EMPOWER and ENABLE` our developer community audience by sharing their knowledge. The engineers from Azure PaaS Developer team will be publishing the code samples and sample scripts to this repository. This repository primarily contains the sample code for How-To scenarios, proof of concepts and PowerShell scripts for the below technologies:
 
