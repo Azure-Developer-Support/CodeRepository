@@ -113,7 +113,7 @@ do
      $Token = $blobs[$blobs.Count -1].ContinuationToken;
      foreach($blob in $blobs){
     
-        #You can use Hot instead of cool if you wish to move the blobs to Hot tier
+        #You can use Hot instead of cool if you wish to move the blobs to Hot tier.
         $blob.ICloudBlob.SetStandardBlobTier("Cool"); 
     }
 
