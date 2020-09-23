@@ -53,7 +53,7 @@ Login-AzAccount
 
 $sa = Get-AzStorageAccount -Name $StorageAccountName -ResourceGroupName $ResourceGroup
 
-#get all of your archived blobs inside a folder and its subfolder
+#get all of your archived blobs inside a folder and its subfolder.
 #-Prefix specifies a prefix for the blob names that you want to get. 
 #-Prefix does not support using any regular expressions or wildcard characters to filter. 
 
