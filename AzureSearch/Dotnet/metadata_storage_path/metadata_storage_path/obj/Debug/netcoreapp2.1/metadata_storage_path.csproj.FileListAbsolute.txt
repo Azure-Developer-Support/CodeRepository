@@ -1,0 +1,11 @@
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\bin\Debug\netcoreapp2.1\metadata_storage_path.deps.json
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\bin\Debug\netcoreapp2.1\metadata_storage_path.runtimeconfig.json
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\bin\Debug\netcoreapp2.1\metadata_storage_path.runtimeconfig.dev.json
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\bin\Debug\netcoreapp2.1\metadata_storage_path.dll
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\obj\Debug\netcoreapp2.1\metadata_storage_path.csproj.CoreCompileInputs.cache
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\obj\Debug\netcoreapp2.1\metadata_storage_path.AssemblyInfoInputs.cache
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\obj\Debug\netcoreapp2.1\metadata_storage_path.AssemblyInfo.cs
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\bin\Debug\netcoreapp2.1\metadata_storage_path.pdb
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\obj\Debug\netcoreapp2.1\metadata_storage_path.csprojAssemblyReference.cache
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\obj\Debug\netcoreapp2.1\metadata_storage_path.dll
+C:\Users\akpriya\source\repos\metadata_storage_path\metadata_storage_path\obj\Debug\netcoreapp2.1\metadata_storage_path.pdb
