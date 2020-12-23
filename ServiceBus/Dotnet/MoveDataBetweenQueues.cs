@@ -16,7 +16,6 @@
 //Pre-requisite: Following nuget packages needs to be installed
 //Microsoft.Azure.ServiceBus
 
-
 //This code will help to move data from one queue to another queue using transactions.
 
 using Microsoft.Azure.ServiceBus;
@@ -26,7 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace MoveDataBetweenQueues
+namespace MoveDataBetweenQueuesSample
 {
     class MoveDataBetweenQueues
     {
