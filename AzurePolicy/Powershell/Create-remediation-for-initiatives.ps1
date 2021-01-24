@@ -12,7 +12,7 @@ $policySetDef = Get-AzPolicySetDefinition -Id $policySetDefID
 ##Adding Policy Set Definitinos array to a variable 
 $definitions = $policySetDef.Properties.PolicyDefinitions
 
-##Add remediation for all the policy definition which are part of initiative definition
+##Create remediation task for all the policy definition which are part of initiative definition
 Foreach ($def in $definitions){
 $rID = $def.policydefinitionReferenceId
 Start-AzPolicyRemediation -Name $rId -PolicyDefinitionReferenceId $rId -PolicyAssignmentId $policyAssignmentId 
