@@ -1,3 +1,6 @@
+# The below script is a sample piece of code that helps you connecting to an BLOB Storage account using Azure SDK for Python
+# There are different authentication mechanism for making the connection and I have made use of connection string
+# Upload Blob operation (with overwrite if exists) and listing of blobs
 #--------------------------------------------------------------------------
 #DISCLAIMER
 #The sample scripts are not supported under any Microsoft standard support program or service.
