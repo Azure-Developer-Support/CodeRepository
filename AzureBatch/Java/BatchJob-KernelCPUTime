@@ -1,0 +1,40 @@
+import java.io.*;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+
+import com.microsoft.azure.batch.*;
+import com.microsoft.azure.batch.auth.*;
+import com.microsoft.azure.batch.protocol.models.*;
+
+
+import org.joda.time.*;
+
+public class PoolAndResourceFile {
+    public static void main(String argv[]) throws Exception {
+        // Get batch and storage account information from environment
+        String batchAccount = "skbatchaccount"; 
+        String batchKey = "2uKudggmaUMA1yIuF/r6UPooylgLPS7wMTc0wkfo4dVxoMYD2bPmnaOq7TLzWJMMbcMynygLLFo+iVFQBREiJQ==";
+        String batchUri = "https://skbatchaccount.eastus.batch.azure.com";
+
+
+        // Create batch client
+        BatchSharedKeyCredentials cred = new BatchSharedKeyCredentials(batchUri, batchAccount, batchKey);
+        BatchClient client = BatchClient.open(cred);
+
+        // DetailLevel detail =  new DetailLevel.Builder().withExpandClause("stats").build();
+        DetailLevel detail =  new DetailLevel.Builder().withExpandClause("stats").withSelectClause("").withFilterClause("").build();
+        CloudJob job = client.jobOperations().getJob("testmount", detail);       
+        System.out.println(job.creationTime());
+
+	if(job.stats() != null){
+		Period kernelCPUTime = job.stats().kernelCPUTime();
+		Period userCPUTime = job.stats().userCPUTime();
+		System.out.println(kernelCPUTime.toString());
+                System.out.println(userCPUTime.toString());
+	}
+
+    }
+}
