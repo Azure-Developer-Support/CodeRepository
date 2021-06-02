@@ -1,4 +1,4 @@
-#The below PowerShell script helps you to download the blob using Secondary Endpoint in RAGRS Storage account
+#The below PowerShell script helps you to list the blobs using Secondary Endpoint in RAGRS Storage account
 #The script can be modified based on the requirements.
 
 #Disclaimer
