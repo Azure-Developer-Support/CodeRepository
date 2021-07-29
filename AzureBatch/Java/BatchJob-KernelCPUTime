@@ -15,9 +15,9 @@ import org.joda.time.*;
 public class PoolAndResourceFile {
     public static void main(String argv[]) throws Exception {
         // Get batch and storage account information from environment
-        String batchAccount = "skbatchaccount"; 
-        String batchKey = "2uKudggmaUMA1yIuF/r6UPooylgLPS7wMTc0wkfo4dVxoMYD2bPmnaOq7TLzWJMMbcMynygLLFo+iVFQBREiJQ==";
-        String batchUri = "https://skbatchaccount.eastus.batch.azure.com";
+        String batchAccount = "<batch-account-name>"; 
+        String batchKey = "<batch-account-key>";
+        String batchUri = "<batch-account-Url>";
 
 
         // Create batch client
