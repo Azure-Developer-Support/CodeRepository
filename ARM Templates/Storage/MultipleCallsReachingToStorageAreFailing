@@ -1,0 +1,282 @@
+#############Template Overview##################################################################################################################################################
+##########This template is based on a use case where when we use an ARM template to roll out a Storage account and soon after that we do a change to the same resource by 
+adding an additional tag, we get below error:
+  'error': {
+    'code': 'ContainerOperationFailure',
+    'message': 'The condition specified using HTTP conditional header(s) is not met.\\nRequestId:a5dd19c8-d01e-001f-6a2e-5de185000000\\nTime:2021-06-09T12:53:41.3505283Z'
+  }
+}
+################################################################################################################################################################################
+# Order of execution is as following:
+using PowerShell New-AzResourceGroupDeployment function start the deployment using the "storageAccount.example5.parameters-first request.json" as parameter file
+once the first deployment is finished a second deployment is started using the "storageAccount.example5.parameters-second request.json" as parameter file
+
+Thereafter the second deployment fails and this can be seen in the Fiddler Traces.
+
+#Reason:
+Product Group mentioned that this looks like a timing problem relating to all these multiple calls made to storage hence it is not always failing. 
+As the template will be parsed by ARM, and ARM will generate multiple calls to storage at around the same time, some of the calls had time overlapping and when the second 
+call(set blob service) was using previous context to send storage, the storage account has been modified already, but second call had no chance to get that update and
+adjust its call correspondingly, so when the call(set blob service) went to storage, the storage side returned error saying hey there was always a chance happened on the 
+storage account it is no longer the previous storage account you know, so I invalidate this call, you might want to adjust your call.
+
+This is documented in https://azure.microsoft.com/de-de/blog/managing-concurrency-in-microsoft-azure-storage-2/
+
+#To avoid this, we can set dependency in template, so the second call will only be made by ARM after the first call was completed.
+Refer https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/resource-dependency for more details.
+#
+
+############################Template #######################################
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the storage account."
+      },
+      "maxLength": 12
+    },
+    "regionShortName": {
+      "type": "string",
+      "defaultValue": "weu",
+      "metadata": {
+        "description": "The region this resource will be deployed in"
+      },
+      "maxLength": 3
+    },
+    "dtapName": {
+      "type": "string",
+      "allowedValues": [
+        "o",
+        "t",
+        "a",
+        "p"
+      ],
+      "metadata": {
+        "description": "The code of the environment this resource will be used in"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of region where the storage account will be created in"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Object containing the tags to apply to all resources"
+      },
+      "defaultValue": {}
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "The sku of the storage account"
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "StorageV2",
+      "metadata": {
+        "description": "The Kind of storage account this resource will be used for"
+      }
+    },
+    "accessTier": {
+      "type": "string",
+      "defaultValue": "Hot",
+      "metadata": {
+        "description": "The AccessTier of the storage account this resource will be used for"
+      }
+    },
+    "networkRuleBypassOptions": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The services to bypass the firewall. Comma-separated list. If left empty AzureServices are added by default."
+      }
+    },
+    "networkRuleAction": {
+      "type": "string",
+      "defaultValue": "Allow",
+      "metadata": {
+        "description": "The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated. Needs to be set to 'Deny' to enable the Firewall"
+      }
+    },
+    "ipRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The IPRules of the storage account this resource will be used for"
+      }
+    },
+    "virtualNetworkRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Virtual Network rules"
+      }
+    },
+    "isContainerRestoreEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Is the point-in-time restore for containers enabled. If enabled then versioning, change feed, and blob soft delete must also be enabled."
+      }
+    },
+    "containerRestorePeriodDays": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Maximum restore point (days ago). Needs to be at least one less than blobSoftDeleteRetentionDays!"
+      }
+    },
+    "isBlobSoftDeleteEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Is the point-in-time restore for containers enabled. If enabled then versioning, change feed, and blob soft delete must also be enabled."
+      }
+    },
+    "blobSoftDeleteRetentionDays": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Keep deleted blobs for (in days)."
+      }
+    },
+    "isContainerSoftDeleteEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Is the point-in-time restore for containers enabled. If enabled then versioning, change feed, and blob soft delete must also be enabled."
+      }
+    },
+    "containerSoftDeleteRetentionDays": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Keep deleted containers for (in days)."
+      }
+    },
+    "isVersioningEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable versioning in the storage account."
+      }
+    },
+    "isChangeFeedEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable blob change feed."
+      }
+    },
+    "allowBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Allow or disallow enabling public access of Blobs."
+      }
+    },
+    "allowSharedKeyAccess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Allow or disallow shared key access."
+      }
+    }
+  },
+  "variables": {
+    "uniqueString": "[substring(concat(uniqueString(resourceGroup().id), uniqueString(subscription().id)), 0, sub(20, length(parameters('storageAccountName'))))]",
+    "storageAccountUniqueName": "[toLower(concat(parameters('storageAccountName'), parameters('regionShortName'), parameters('dtapName'), variables('uniqueString')))]",
+    "storageAccountDefaultBypass": "AzureServices",
+    "networkRuleBypassOptions": "[if(empty(parameters('networkRuleBypassOptions')), variables('storageAccountDefaultBypass'), concat(variables('storageAccountDefaultBypass'),',',parameters('networkRuleBypassOptions')))]",
+    "defaultTags": {
+      "environment": "[toLower(parameters('dtapName'))]",
+      "version": "[deployment().properties.template.contentVersion]"
+    },
+    "allTags": "[union(parameters('tags'),variables('defaultTags'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('storageAccountUniqueName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-02-01",
+      "sku": {
+        "name": "[parameters('skuName')]"
+      },
+      "kind": "[parameters('kind')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('allTags')]",
+      "properties": {
+        "supportsHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+        "allowSharedKeyAccess": "[parameters('allowSharedKeyAccess')]",
+        "accessTier": "[if(equals(toLower(parameters('kind')), 'storagev2'), parameters('accessTier'), json('null'))]",
+        "networkAcls": {
+          "bypass": "[variables('networkRuleBypassOptions')]",
+          "defaultAction": "[parameters('networkRuleAction')]",
+          "ipRules": "[parameters('ipRules')]",
+          "virtualNetworkRules": "[parameters('virtualNetworkRules')]"
+        }
+      }
+    },
+    {
+      "name": "nestedblobsvc",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+          		{
+		"name": "[concat(variables('storageAccountUniqueName'), '/default')]",
+		"type": "Microsoft.Storage/storageAccounts/blobServices",
+		"apiVersion": "2021-02-01",
+		"properties": {
+		"restorePolicy": {
+		"enabled": "[parameters('isContainerRestoreEnabled')]",
+		          "days": "[if(parameters('isContainerRestoreEnabled'), parameters('containerRestorePeriodDays'), json('null'))]"
+		        },
+		        "deleteRetentionPolicy": {
+		          "enabled": "[parameters('isBlobSoftDeleteEnabled')]",
+		          "days": "[if(parameters('isBlobSoftDeleteEnabled'), parameters('blobSoftDeleteRetentionDays'), json('null'))]"
+		        },
+		        "containerDeleteRetentionPolicy": {
+		          "enabled": "[parameters('isContainerSoftDeleteEnabled')]",
+		          "days": "[if(parameters('isContainerSoftDeleteEnabled'), parameters('containerSoftDeleteRetentionDays'), json('null'))]"
+		        },
+		        "changeFeed": {
+		          "enabled": "[parameters('isChangeFeedEnabled')]"
+		        },
+		        "isVersioningEnabled": "[parameters('isVersioningEnabled')]"
+		          	}
+			}
+  			]
+  		      }
+  		     },
+  	"dependsOn": [
+  	"[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountUniqueName'))]"
+  	]
+  	}
+  ],
+  "outputs": {
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storageAccountUniqueName')]"
+    },
+    "storageAccountResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountUniqueName'))]"
+    }
+  }
+}
