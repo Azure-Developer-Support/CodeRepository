@@ -97,7 +97,7 @@ do {
             Write-Verbose "Blob listing continuation token = {0}".Replace("{0}",$blob_continuation_token.NextMarker)
           }
         }
-     } while ($container_continuation_token.NextMarker.Length -ne 0)
+     } while ($blob_continuation_token -ne $null)
 
       Write-Verbose "Calculated size of $container = $total_usage with soft_delete usage of $soft_delete_usage"
                         
