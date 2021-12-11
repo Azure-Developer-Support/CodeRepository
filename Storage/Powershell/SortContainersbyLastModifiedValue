@@ -1,0 +1,31 @@
+################# Azure Blob Storage - PowerShell ####################    
+  
+## Input Parameters    
+$resourceGroupName="XX"    
+$storageAccName="XX"    
+  
+## Connect to Azure Account    
+Connect-AzAccount     
+  
+## Function to get all the containers    
+Function GetAllStorageContainer    
+{    
+    Write-Host -ForegroundColor Green "Retrieving storage container.."        
+    ## Get the storage account from which container has to be retrieved    
+    $storageAcc=Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccName        
+    ## Get the storage account context    
+    $ctx=$storageAcc.Context    
+    ## List all the containers    
+    $containers=Get-AzStorageContainer  -Context $ctx  | sort @{expression="LastModified";Descending=$false}   
+    foreach($container in $containers)    
+    {  
+        write-host -ForegroundColor Yellow "Container Name :::" $container.Name  , "Date   :::"  $container.LastModified  
+       
+       
+    }    
+}     
+    
+GetAllStorageContainer     
+  
+## Disconnect from Azure Account    
+Disconnect-AzAccount   
