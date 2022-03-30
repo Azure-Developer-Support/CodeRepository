@@ -1,0 +1,41 @@
+Import-Module Az.Storage
+
+$storageAccountName = "test" 
+$StorageAccountKey = "XXXX" 
+$storageContainer = "testcontainer"  
+#get context  
+$ctx = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $StorageAccountKey  
+  
+#$MaxReturn = 100 
+$Token = $Null    
+  
+do   
+{   
+      # get a list of all of the blobs in the container  
+#	$Blobs = Get-AzStorageBlob -Container $storageContainer -Context $ctx -IncludeDeleted -MaxCount $MaxReturn  -ContinuationToken $Token 
+$Blobs = Get-AzStorageBlob -Container $storageContainer -Context $ctx -IncludeDeleted -IncludeVersion   -ContinuationToken $Token 
+	write-host "========================================="   
+	write-host "All Blobs including soft deleted ones: "   
+	$Blobs.Name   
+	$c=0   
+	$State="Available"   
+$Blobs.Count
+	foreach($blob in $Blobs){ 
+         
+     write-host "Blob state: " $blob.BlobProperties.LeaseState
+		if($blob.BlobProperties.LeaseState -ne $State)   
+		{   
+		write-host "========================================"   
+		$c++ 
+		write-host "Blob name: " $blob.Name   
+		write-host "Deleted at: " $blob.Properties.DeletedTime.ToString()   
+
+# To Undelete the blobs   
+	write-host "Undeleting blobs...." 
+	$blob..Undelete()
+		}   
+	}   
+	write-host "A total of " $c " blobs were soft deleted out of a total of " $Blobs.Name.Count " blobs" 
+	
+	$Token = $blob[$blob.Count -1].ContinuationToken;   
+}while ($Token -ne $Null) 
