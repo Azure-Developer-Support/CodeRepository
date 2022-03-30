@@ -1,0 +1,11 @@
+Select-AzSubscription -SubscriptionId <your-subscriptionId>                                     
+
+$vaultResourceId = (Get-AzKeyVault -VaultName myvault).ResourceId                 
+
+$vault = Get-AzResource -ResourceId $vaultResourceId -ExpandProperties           
+
+$vault.Properties.TenantId = (Get-AzContext).Tenant.TenantId                                
+
+$vault.Properties.AccessPolicies = @()  
+
+Set-AzResource -ResourceId $vaultResourceId -Properties $vault.Properties
