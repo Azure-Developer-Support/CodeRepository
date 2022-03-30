@@ -1,0 +1,14 @@
+#Connect-AzAccount
+$storageAccountName = "test"
+$resourceGroupName="test"
+$StorageAccountKey = "XXXXX" 
+#$storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName       `
+#$ctx = $storageAccount.Context
+$ctx = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $StorageAccountKey
+# Retrieve a specific queue
+$queue = Get-AzStorageQueue –Name kar* –Context $ctx
+# Show the properties of the queue
+$queue
+
+# Retrieve all queues and show their names
+#Get-AzStorageQueue -Context $ctx | Select-Object Name 
