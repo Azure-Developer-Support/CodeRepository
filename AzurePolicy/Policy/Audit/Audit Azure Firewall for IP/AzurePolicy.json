@@ -1,0 +1,64 @@
+{
+  "mode": "All",
+  "description":"This policy would use Audit effect so as to flag the azure firewall with not allowed IP addresses as non-compliant.",
+  "metadata":{
+    "author":"saglodha"
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/azureFirewalls"
+        },
+        {
+          "count": {
+            "field": "Microsoft.Network/azureFirewalls/networkRuleCollections[*]",
+            "where": {
+              "allOf": [
+                {
+                  "field": "Microsoft.Network/azureFirewalls/networkRuleCollections[*].action.type",
+                  "equals": "Allow"
+                },
+                {
+                  "count": {
+                    "field": "Microsoft.Network/azureFirewalls/networkRuleCollections[*].rules[*]",
+                    "where": {
+                      "count": {
+                        "field": "Microsoft.Network/azureFirewalls/networkRuleCollections[*].rules[*].sourceAddresses[*]",
+                        "where": {
+                          "field": "Microsoft.Network/azureFirewalls/networkRuleCollections[*].rules[*].sourceAddresses[*]",
+                          "in": "[parameters('notAllowedAddresses')]"
+                        }
+                      },
+                      "greater": 0
+                    }
+                  },
+                  "greater": 0
+                }
+              ]
+            }
+          },
+          "greater": 0
+        },
+        {
+          "value": "[length(parameters('notAllowedAddresses'))]",
+          "greater": -1
+        }
+      ]
+    },
+    "then": {
+      "effect": "audit"
+    }
+  },
+  "parameters": {
+    "notAllowedAddresses": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "notAllowedAddresses",
+        "description": "List of not allowed address"
+      },
+      "defaultValue": ["*"]
+    }
+  }
+}
