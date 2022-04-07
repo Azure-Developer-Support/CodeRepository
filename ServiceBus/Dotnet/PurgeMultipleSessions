@@ -1,0 +1,84 @@
+//'By using the following materials or sample code you agree to be bound by the license terms below 
+//'and the Microsoft Partner Program Agreement the terms of which are incorporated herein by this reference. 
+//'These license terms are an agreement between Microsoft Corporation (or, if applicable based on where you 
+//'are located, one of its affiliates) and you. Any materials (other than sample code) we provide to you 
+//'are for your internal use only. Any sample code is provided for the purpose of illustration only and is 
+//'not intended to be used in a production environment. We grant you a nonexclusive, royalty-free right to 
+//'use and modify the sample code and to reproduce and distribute the object code form of the sample code, 
+//'provided that you agree: (i) to not use Microsoft’s name, logo, or trademarks to market your software product 
+//'in which the sample code is embedded; (ii) to include a valid copyright notice on your software product in 
+//'which the sample code is embedded; (iii) to provide on behalf of and for the benefit of your subcontractors 
+//'a disclaimer of warranties, exclusion of liability for indirect and consequential damages and a reasonable 
+//'limitation of liability; and (iv) to indemnify, hold harmless, and defend Microsoft, its affiliates and 
+//'suppliers from and against any third party claims or lawsuits, including attorneys’ fees, that arise or result 
+//'from the use or distribution of the sample code."  
+
+//Pre-requisite: Following nuget packages needs to be installed
+//Azure.Messaging.ServiceBus
+
+//This code will help to first send multiple session messages to queue and then purge all the different session messages from that same queue within short period of time
+
+using System;
+using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
+
+namespace PurgeSBMessages
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            var connectionStr = "<NAMESPACE CONNECTION-STRING>";
+            var queueName = "<QueueName>";
+            await using var client = new ServiceBusClient(connectionStr);
+            var sender = client.CreateSender(queueName);
+
+            for (int i = 0; i < 100; i++) //count of session Id's
+            {
+                int j = 50; // count of messages per session
+                while (j > 0)
+                {
+                    var message = new ServiceBusMessage();
+                    message.SessionId = "abs" + i.ToString();
+                    Console.WriteLine(message.SessionId);
+                    await sender.SendMessageAsync(message);
+                    j -= 1;
+                }
+
+            }
+
+            Console.WriteLine("DONE#######################");
+
+            while (true)
+            {
+
+                ServiceBusSessionReceiver receiver = await client.AcceptNextSessionAsync(queueName, new ServiceBusSessionReceiverOptions()
+                {
+                    PrefetchCount = 100,
+                    ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete
+                });
+
+                Console.WriteLine(receiver.SessionId);
+
+                if (receiver == null)
+                {
+                    break;
+                }
+                var msg = await receiver.ReceiveMessageAsync();
+                while (msg != null)
+                {
+
+                    Console.WriteLine("messageid: " + msg.MessageId.ToString());
+
+                    //await receiver.CompleteMessageAsync(msg);
+                    msg = await receiver.ReceiveMessageAsync(TimeSpan.FromSeconds(2));
+                }
+
+
+
+            }
+
+        }
+    }
+}
+
