@@ -1,0 +1,46 @@
+{
+  "mode": "All",
+  "description":"This Policy would use the Auditifnotexist effect to check if the storage account has a private link with file sub type.",
+  "metadata":{
+    "author":"hakashya"
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "field": "kind",
+          "notEquals": "BlobStorage"
+        }
+      ]
+    },
+    "then": {
+      "effect": "auditIfNotExists",
+      "details": {
+        "type": "Microsoft.Network/privateEndpoints",
+        "existenceCondition": {
+          "count": {
+            "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*]",
+            "where": {
+              "allOf": [
+                {
+                  "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+                  "contains": "file"
+                },
+                {
+                  "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].privateLinkServiceId",
+                  "equals": "[concat(resourcegroup().id,'/providers/Microsoft.Storage/storageAccounts/',field('name'))]"
+                }
+              ]
+            }
+          },
+          "greater": 0
+        }
+      }
+    }
+  },
+  "parameters": {}
+}
