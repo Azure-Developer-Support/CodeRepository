@@ -1,0 +1,25 @@
+{
+    "mode": "All",
+    "description":"This Policy would audit the storage accounts where the the delete retention policy for blob services are in disabled state.",
+    "metadata":{
+        "author":"hakashya"
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "equals": "Microsoft.Storage/storageAccounts/blobServices"
+                },
+                {
+                    "field": "Microsoft.Storage/storageAccounts/blobServices/default.deleteRetentionPolicy.enabled",
+                    "equals": false
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "parameters": {}
+}
