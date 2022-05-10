@@ -1,4 +1,4 @@
-#The below PowerShell script helps to Set the CacheControl property at Container Level.
+#The below PowerShell script helps to Sets the CacheControl property for all the Blobs within the Container.
 
 
 
@@ -29,7 +29,7 @@ foreach($blob in $blobs)
 # Set the CacheControl property
 # Set the CacheControl property to expire in 1 hour (3600 seconds ->max-age=3600)
 #If we use no-store : it indicates that any caches of any kind will not be storing the response. We get the response from Server
-#If we use no-cache : the response may get stored in browser cache, but it gets validated every time with the server before reuse using ETag                    value. Hence, there are chances that browser sends the cache content next time
+#If we use no-cache : the response may get stored in browser cache, but it gets validated every time with the server before reuse using ETag value. Hence, there are chances that browser sends the cache content next time
 
 $blob.ICloudBlob.Properties.CacheControl = "CacheControlValue"
 
