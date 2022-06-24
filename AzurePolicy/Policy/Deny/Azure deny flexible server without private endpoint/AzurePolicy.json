@@ -1,0 +1,41 @@
+{
+  "mode": "All",
+  "description":"This policy would use Deny effect to block creation of flexible server if private endpoint is not specified",
+  "metadata":{
+    "author":"Hakashya"
+  },
+  "policyRule": {
+    "if": {
+      "anyof": [
+        {
+          "allof": [
+            {
+              "field": "type",
+              "notequals": "Microsoft.DBforPostgreSQL/flexibleServers"
+            },
+            {
+              "field": "type",
+              "like": "Microsoft.DBforPostgreSQL*"
+            }
+          ]
+        },
+        {
+          "allof": [
+            {
+              "field": "type",
+              "equals": "Microsoft.DBforPostgreSQL/flexibleServers"
+            },
+            {
+              "field": "Microsoft.DBForPostgreSql/flexibleServers/delegatedSubnetArguments.subnetArmResourceId",
+              "exists": false
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "deny"
+    }
+  },
+  "parameters": {}
+}
