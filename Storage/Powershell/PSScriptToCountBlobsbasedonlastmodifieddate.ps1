@@ -61,4 +61,5 @@ if ($ContinuationToken -ne $null)
 
 }while ($ContinuationToken -ne $null)
 
- Write-Host "Total Number of Blobs : " $total_blob_count
+Write-Host "Total Number of Blobs : " $total_blob_count
+
