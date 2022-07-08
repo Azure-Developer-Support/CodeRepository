@@ -38,7 +38,7 @@ $storageaccountNames = $storageaccountNames.Split("/") | Select-Object -Last 5
 $storageaccountNames = $storageaccountNames -join "/"
 
 #REST API to get details of lifecycle management policy
-$URIforGetOLCM = https://management.azure.com/subscriptions/ + $subscriptionID + "/resourceGroups/" + $storageaccountNames + "/managementPolicies/default?api-version=2021-04-01"
+$URIforGetOLCM = "https://management.azure.com/subscriptions/" + $subscriptionID + "/resourceGroups/" + $storageaccountNames + "/managementPolicies/default?api-version=2021-04-01"
 
 try
 {
