@@ -1,0 +1,33 @@
+{
+  "mode": "All",
+  "description":"This policy would use Deny effect to block creation of flexible server if private endpoint is not specified",
+  "metadata":{
+    "author":"Hakashya"
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/privateEndpoints"
+        },
+        {
+          "anyOf": [
+            {
+              "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+              "equals": "azuremonitor"
+            },
+            {
+              "field": "Microsoft.Network/privateEndpoints/manualPrivateLinkServiceConnections[*].groupIds[*]",
+              "equals": "azuremonitor"
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "deny"
+    }
+  },
+  "parameters": {}
+}
