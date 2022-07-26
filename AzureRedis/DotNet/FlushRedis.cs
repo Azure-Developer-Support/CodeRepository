@@ -15,6 +15,10 @@
 // This code will take connection string as the input parameter and can exceute flush all of the respective redis instance.
 // You can use it like this: FlushRedis.exe "<redisname>.redis.cache.windows.net:6380,password=XXXXX=,ssl=True,abortConnect=False"
 
+//Pre-requisite
+//1. Please add the RedisConnection class in your colution as specified here: https://github.com/Azure-Samples/azure-cache-redis-samples/blob/main/quickstart/dotnet/Redistest/RedisConnection.cs
+//2. Please use Nuget to install StackExchange.Redis and add reference of System.Text.Json to the solution to make the sample run successfully
+
 using StackExchange.Redis;
 using System;
 using System.Configuration;
