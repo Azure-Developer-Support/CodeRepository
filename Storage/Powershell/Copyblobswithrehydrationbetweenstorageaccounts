@@ -1,0 +1,54 @@
+###ATTENTION: DISCLAIMER###
+
+#DISCLAIMER
+#The sample scripts are not supported under any Microsoft standard support program or service. The sample scripts are provided AS IS without warranty of any kind. Microsoft further disclaims all implied warranties including, without limitation, any implied warranties of merchantability or of fitness for a particular purpose. The entire risk arising out of the use or performance of the sample scripts and documentation remains with you. In no event shall Microsoft, its authors, owners of this repository or anyone else involved in the creation, production, or delivery of the scripts be liable for any damages whatsoever (including, 
+#without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the sample scripts or documentation, even if Microsoft has been advised of the possibility of such damages 
+
+
+#############Script Overview#################################################################
+
+##########These scripts helps to copy the blobs in Archive Tier from one storage account to other storage account in same Region with(Make sure to use latest module of AZ.Storage) #########################
+
+
+#Please update these value as per your scenario
+
+$rgName = "RGname"
+$accountName = "Storageaccountname"
+$srcContainerName = "srcconatinername"
+$destContainerName = "destconatinername"
+$accountName1="Deststorageaccountname"
+
+$storageAccount= New-AzStorageContext -StorageAccountName $accountName -StorageAccountKey ""
+$ctx = $storageAccount.Context
+
+$storageAccount1= New-AzStorageContext -StorageAccountName $accountName1 -StorageAccountKey ""
+$ctx1 = $storageAccount1.Context
+
+
+$MaxReturn = 5000
+
+$blob_continuation_token = $null
+
+  do 
+    {
+
+      $blobs = Get-AzStorageBlob -Context $ctx -Container $srcContainerName -MaxCount $MaxReturn -ContinuationToken $blob_continuation_token | Where-Object{$_.BlobProperties.Accesstier -eq "Archive"}
+      
+      foreach ($blob in $blobs)
+     {
+        $srcBlobUri = $blob | New-AzStorageBlobSASToken  -Permission rwd  -ExpiryTime (Get-Date).AddDays(1)  -FullUri
+        Start-AzStorageBlobCopy -AbsoluteUri $srcBlobUri  -DestContainer $destContainerName  -DestBlob $blob.Name  -DestContext $ctx1  -StandardBlobTier Hot  -RehydratePriority Standard
+     }
+
+      if ($blobs -ne $null)
+        {
+          $blob_continuation_token = $blobs[$blobs.Count - 1].ContinuationToken
+
+        }
+
+      if ($blob_continuation_token -ne $null)
+        {
+         Write-Verbose ("Blob listing continuation token = {0}" -f $blob_continuation_token.NextMarker)
+        }
+
+    } while ($blob_continuation_token -ne $null)
