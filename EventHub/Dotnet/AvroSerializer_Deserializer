@@ -1,0 +1,355 @@
+The below .NET code helps to serialize/send the events using AMQP Avro serializer and deserialize using Kafka Avro deserializer. 
+
+# Please use the supported version of Event Hub and Avro libraries
+
+//'By using the following materials or sample code you agree to be bound by the license terms below 
+//'and the Microsoft Partner Program Agreement the terms of which are incorporated herein by this reference. 
+//'These license terms are an agreement between Microsoft Corporation (or, if applicable based on where you 
+//'are located, one of its affiliates) and you. Any materials (other than sample code) we provide to you 
+//'are for your internal use only. Any sample code is provided for the purpose of illustration only and is 
+//'not intended to be used in a production environment. We grant you a nonexclusive, royalty-free right to 
+//'use and modify the sample code and to reproduce and distribute the object code form of the sample code, 
+//'provided that you agree: (i) to not use Microsoft’s name, logo, or trademarks to market your software product 
+//'in which the sample code is embedded; (ii) to include a valid copyright notice on your software product in 
+//'which the sample code is embedded; (iii) to provide on behalf of and for the benefit of your subcontractors 
+//'a disclaimer of warranties, exclusion of liability for indirect and consequential damages and a reasonable 
+//'limitation of liability; and (iv) to indemnify, hold harmless, and defend Microsoft, its affiliates and 
+//'suppliers from and against any third party claims or lawsuits, including attorneys’ fees, that arise or result 
+//'from the use or distribution of the sample code."  
+
+
+
+//Pre-requisite: Following nuget packages needs to be installed
+//Microsoft.Azure.EventHubs
+//Microsoft.Azure.EventHubs.Processor
+//Azure.Identity
+//Azure.Messaging.EventHubs.Processor 
+//Microsoft.Azure.Data.SchemaRegistry.ApacheAvro
+//Azure.Core
+//Confluent.Kafka
+//Microsoft.Azure.Data.SchemaRegistry.ApacheAvro
+//Azure.Data.SchemaRegistry
+
+
+using Avro.Specific;
+using Avro;
+using Avro.Specific;
+using System;
+using System.Text;
+using Confluent.Kafka;
+using global::Azure;
+using global::Azure.Core;
+using global::Azure.Data.SchemaRegistry;
+using Microsoft.Azure.Data.SchemaRegistry.ApacheAvro;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
+using Azure.Identity;
+using Confluent.Kafka;
+
+
+namespace AvroSerializer_Deserializer
+{
+    public partial class CustomerInvoice : ISpecificRecord
+    {
+        public static Schema _SCHEMA = Avro.Schema.Parse("{\"type\":\"record\",\"name\":\"CustomerInvoice\",\"namespace\":\"com.azure.schemaregistry.s" +
+                "amples\",\"fields\":[{\"name\":\"InvoiceId\",\"type\":\"string\"},{\"name\":\"MerchantId\",\"typ" +
+                "e\":\"string\"},{\"name\":\"TransactionValueUsd\",\"type\":\"int\"},{\"name\":\"UserId\",\"type\"" +
+                ":\"string\"}]}");
+        private string _InvoiceId;
+        private string _MerchantId;
+        private int _TransactionValueUsd;
+        private string _UserId;
+        private string _MerchantId2;
+        public virtual Schema Schema
+        {
+            get
+            {
+                return CustomerInvoice._SCHEMA;
+            }
+        }
+        public string InvoiceId
+        {
+            get
+            {
+                return this._InvoiceId;
+            }
+            set
+            {
+                this._InvoiceId = value;
+            }
+        }
+        public string MerchantId
+        {
+            get
+            {
+                return this._MerchantId;
+            }
+            set
+            {
+                this._MerchantId = value;
+            }
+        }
+        public string MerchantId2
+        {
+            get
+            {
+                return this._MerchantId2;
+            }
+            set
+            {
+                this._MerchantId2 = value;
+            }
+        }
+        public int TransactionValueUsd
+        {
+            get
+            {
+                return this._TransactionValueUsd;
+            }
+            set
+            {
+                this._TransactionValueUsd = value;
+            }
+        }
+        public string UserId
+        {
+            get
+            {
+                return this._UserId;
+            }
+            set
+            {
+                this._UserId = value;
+            }
+        }
+        public virtual object Get(int fieldPos)
+        {
+            switch (fieldPos)
+            {
+                case 0: return this.InvoiceId;
+                case 1: return this.MerchantId;
+                case 2: return this.TransactionValueUsd;
+                case 3: return this.UserId;
+                default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Get()");
+            };
+        }
+        public virtual void Put(int fieldPos, object fieldValue)
+        {
+            switch (fieldPos)
+            {
+                case 0: this.InvoiceId = (System.String)fieldValue; break;
+                case 1: this.MerchantId = (System.String)fieldValue; break;
+                case 2: this.TransactionValueUsd = (System.Int32)fieldValue; break;
+                case 3: this.UserId = (System.String)fieldValue; break;
+                default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Put()");
+            };
+        }
+    }
+    
+    
+    public class Serializer
+    {
+        private static String endpointName = "testpremium123.servicebus.windows.net";
+
+        private static String groupName = "TestSchemaGroup";
+
+        private static byte[] _memoryStreamBytes;
+        public async Task SerializerAsync()
+        {
+
+            try
+            {
+                string tenantId = "7xxxxxxd7cxxxdb47";
+
+                string clientId = "50b7xxxxx45c-e23f896dxxx";
+
+                string clientSecret = "tUU8xxxx7u3Kxxoqxip9KxxxxT6";
+
+                var aadAuth = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+                // Schema
+
+                var schemaRegistryClient = new SchemaRegistryClient("texxxxx.servicebus.windows.net", credential: aadAuth);
+                var serializer = new SchemaRegistryAvroSerializer(schemaRegistryClient, groupName, new SchemaRegistryAvroSerializerOptions { AutoRegisterSchemas = true });
+
+                var invoice = new CustomerInvoice()
+                {
+                    
+                    MerchantId = "arthur",
+                    TransactionValueUsd = 100,
+                    UserId = "alice",
+                    MerchantId2="xxxxxxx"
+
+                };
+                EventData eventData = (EventData)await serializer.SerializeAsync(invoice, messageType: typeof(EventData));
+
+                // the schema Id will be included as a parameter of the content type
+                Console.WriteLine(eventData.ContentType);
+
+                // the serialized Avro data will be stored in the EventBody
+                Console.WriteLine(eventData.EventBody);
+
+                // construct a publisher and publish the events to our event hub
+                var fullyQualifiedNamespace = "xxxxxx.servicebus.windows.net";
+                var eventHubName = "test";
+                var credential = new DefaultAzureCredential();
+                await using var producer = new EventHubProducerClient(fullyQualifiedNamespace, eventHubName, aadAuth);
+                await producer.SendAsync(new EventData[] { eventData });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+    }
+    
+    
+    /// <summary>
+    /// Implementation of Confluent .NET Kafka deserializer, wrapping Azure Schema Registry C# implementation.
+    /// 
+    /// Note that Confluent .NET Kafka removed support for IAsyncDeserializer<T>.  See: https://github.com/confluentinc/confluent-kafka-dotnet/issues/922
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class KafkaAvroDeserializer<T> : IDeserializer<T>
+    {
+        private readonly SchemaRegistryAvroSerializer serializer;
+
+        /// <summary>
+        /// Constructor for KafkaAvroDeserializer.
+        /// </summary>
+        /// <param name="schemaRegistryUrl"></param> URL endpoint for Azure Schema Registry instance
+        /// <param name="credential"></param> TokenCredential implementation for OAuth2 authentication
+        public KafkaAvroDeserializer(string schemaRegistryUrl, TokenCredential credential)
+        {
+            this.serializer = new SchemaRegistryAvroSerializer(new SchemaRegistryClient(schemaRegistryUrl, credential), "$default");
+        }
+        
+        public T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
+        {
+            if (data.IsEmpty)
+            {
+                return default(T);
+            }
+
+            BinaryContent content = new BinaryContent
+            {
+                Data = new BinaryData(data.ToArray()),
+            };
+
+            if (context.Headers.TryGetLastBytes("content-type", out var headerBytes))
+            {
+                content.ContentType = Encoding.UTF8.GetString(headerBytes);
+            }
+            else
+            {
+                content.ContentType = string.Empty;
+            }
+
+            return serializer.Deserialize<T>(content);
+        }
+    }
+    
+    class Worker
+    {
+        static readonly string schemaRegistryUrl = ConfigurationManager.AppSettings["SCHEMA_REGISTRY_URL"];
+        static readonly string schemaGroup = ConfigurationManager.AppSettings["SCHEMA_GROUP"];
+        static readonly ClientSecretCredential credential = new ClientSecretCredential(
+                        ConfigurationManager.AppSettings["SCHEMA_REGISTRY_TENANT_ID"],
+                        ConfigurationManager.AppSettings["SCHEMA_REGISTRY_CLIENT_ID"],
+                        ConfigurationManager.AppSettings["SCHEMA_REGISTRY_CLIENT_SECRET"]);
+
+
+        public static void Consumer(string brokerList, string connStr, string consumergroup, string topic, string cacertlocation)
+        {
+            var config = new ConsumerConfig
+            {
+                BootstrapServers = brokerList,
+                SecurityProtocol = SecurityProtocol.SaslSsl,
+                SocketTimeoutMs = 60000,                //this corresponds to the Consumer config `request.timeout.ms`
+                SessionTimeoutMs = 30000,
+                SaslMechanism = SaslMechanism.Plain,
+                SaslUsername = "$ConnectionString",
+                SaslPassword = connStr,
+                SslCaLocation = cacertlocation,
+                GroupId = consumergroup,
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                BrokerVersionFallback = "1.0.0",        //Event Hubs for Kafka Ecosystems supports Kafka v1.0+, a fallback to an older API will fail
+                //Debug = "security,broker,protocol"    //Uncomment for librdkafka debugging information
+            };
+
+            var valueDeserializer = new KafkaAvroDeserializer<CustomerInvoice>(schemaRegistryUrl, credential);
+
+            using (var consumer = new ConsumerBuilder<string, CustomerInvoice>(config).SetKeyDeserializer(Deserializers.Utf8).SetValueDeserializer(valueDeserializer).Build())
+            {
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+
+                consumer.Subscribe(topic);
+
+                Console.WriteLine("Consuming messages from topic: " + topic + ", broker(s): " + brokerList);
+
+                while (true)
+                {
+                    try
+                    {
+                        var msg = consumer.Consume(cts.Token);
+                        Console.WriteLine($"Received: '{msg.Message.Value.InvoiceId}'");
+                        //Console.WriteLine("");
+                    }
+                    catch (ConsumeException e)
+                    {
+                        Console.WriteLine($"Consume error: {e.Error.Reason}");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error: {e.Message}");
+                    }
+                }
+            }
+        }
+    }
+    
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            Serializer serialzer = new Serializer();
+            await serialzer.SerializerAsync();
+            string brokerList = ConfigurationManager.AppSettings["EH_FQDN"];
+            string connectionString = ConfigurationManager.AppSettings["EH_JAAS_CONFIG"];
+            string topic = ConfigurationManager.AppSettings["EH_NAME"];
+            string caCertLocation = ConfigurationManager.AppSettings["CA_CERT_LOCATION"];
+            string consumerGroup = ConfigurationManager.AppSettings["KAFKA_GROUP"];
+
+            Console.WriteLine("Initializing Consumer");
+            Worker.Consumer(brokerList, connectionString, consumerGroup, topic, caCertLocation);
+            Console.ReadKey();
+        }
+    }    
+    
+}
+
+**************************************************************************************************************
+App.config
+
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="EH_FQDN" value="xxxxx3.servicebus.windows.net:9093"/>
+    <add key="EH_JAAS_CONFIG" value="Endpoint=sb://xexxxxx3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=rto6dZrAVIWDUAIEOlC8wD+EFUhmpCnKLxMvg6zXkbA="/>
+    <add key="EH_NAME" value="test"/>
+    <add key="KAFKA_GROUP" value="testconsumergroup"/>
+    <add key="CA_CERT_LOCATION" value=".\cacert.pem"/>
+    <add key="SCHEMA_REGISTRY_URL" value="xxxx3.servicebus.windows.net"/>
+    <add key="SCHEMA_REGISTRY_TENANT_ID" value="7xxxxxb47"/>
+    <add key="SCHEMA_REGISTRY_CLIENT_ID" value="50xxxxx746"/>
+    <add key="SCHEMA_REGISTRY_CLIENT_SECRET" value="QJxxxxxxkX"/>
+  </appSettings>
+</configuration>
+
+
+
