@@ -1,0 +1,63 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "in": [
+            "Microsoft.Compute/virtualMachines",
+            "Microsoft.Compute/disks"
+          ]
+        },
+        {
+          "field": "Microsoft.Compute/disks/sku.name",
+          "equals": "StandardSSD_LRS"
+        },
+        {
+          "anyOf": [
+            {
+              "field": "[concat('tags[', parameters('tagName'), ']')]",
+              "exists": false
+            },
+            {
+              "field": "[concat('tags[', parameters('tagName'), ']')]",
+              "notIn": "[parameters('tagValue')]"
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "deny",
+        "Disabled"
+      ],
+      "defaultValue": "deny"
+    },
+    "tagName": {
+     "type": "String",
+      "metadata": {
+        "displayName": "Tag Name",
+        "description": "Name of the tag, such as 'environment'"
+      }
+    },
+    "tagValue": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "Tag Value",
+        "description": "Value of the tag, such as 'production'"
+      }
+    }
+  }
+}
