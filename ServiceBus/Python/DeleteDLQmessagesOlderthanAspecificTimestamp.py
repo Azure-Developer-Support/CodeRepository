@@ -9,8 +9,8 @@ from datetime import datetime
 import pytz
 from dateutil.relativedelta import relativedelta
 
-NAMESPACE_CONNECTION_STR = "Endpoint=sb://jmspremamichauh.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=G0K1HvB/uMKnfjVXM7gwJhOnfZyeMQWUDZcDXrjPjR4="
-QUEUE_NAME = "test"  # For Topic subscription, you can use below commented variables.
+NAMESPACE_CONNECTION_STR = "<Connection-String>"
+QUEUE_NAME = "<entity-name>"  # For Topic subscription, you can use below commented variables.
 
 # TOPIC_NAME = "TOPIC_NAME"
 # SUBSCRIPTION_NAME = "SUBSCRIPTION_NAME"
