@@ -1,0 +1,25 @@
+ #The Get-AzApiManagement cmdlet gets a list of all API Management services under subscription or specified resource group or a particular API Management.
+$apimservice= Get-AzApiManagement -ResourceGroupName "contosogroup" -Name "contoso"
+
+#To check the context information for the APIM
+$apimservice
+
+#To retrieve the SystemCertificates information
+$cert = $apimservice.SystemCertificates.CertificateInformation
+
+#To view the cert information from the variable
+$cert
+
+#Get-Member tells us about the Properties and Methods of an object
+$member =$cert |Get-Member
+
+
+#this to remove all the CA certificates
+$apimservice.SystemCertificates.Clear()  
+
+#OR this to loop throught certificates and removes
+$apimservice  |ForEach { $_.PSObject.Properties.Remove('SystemCertificates') }
+
+#To update the service once we remove the CA certs from the context
+#The Set-AzApiManagement cmdlet updates an Azure API Management service.
+Set-AzApiManagement -InputObject $apimservice 
