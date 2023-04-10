@@ -7,7 +7,7 @@
 
 
 #############Script Overview#################################################################
-##########These scripts provide total number of blobs based on Tier for a storage account #########################
+##########These scripts helps in finding total number of 0 Bytes file in Azure File Share #########################
 
 
 
