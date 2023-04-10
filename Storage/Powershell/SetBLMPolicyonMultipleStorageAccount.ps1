@@ -1,7 +1,7 @@
-#This script will help to create LCM rules on multiple Storage accounts (for all Blobs of all ST Accounts) of a RG/Subscription 
-#It will help to set action for Data Move to Cool Tier --> Cool to Archive--> Delete Blob (USers can select days according to requirement in Script)
-#It will help ro set action for deleting version and Snapshot as well
-# IF USers want to set only one action then they can comment other action by using # in script
+#This script will help to create BLM Policy on multiple Storage accounts (for all Blobs of all ST Accounts) of a RG/Subscription. 
+#It will help to set actions for Data Move to Cool Tier --> Cool to Archive--> Delete Blob (USers can select days according to their requirement).
+#It will help to set actions for deleting versions and Snapshots as well.
+#If Users want to set only one action in that case they can comment other actions by using # in script.
 
 
 
@@ -17,11 +17,13 @@ Connect-AzAccount
 Set-AzContext -SubscriptionName 'XXXXXXXXXXXXXXXXXXXXXXX' 
 $resourceGroup = "YYYYYYY" 
 $storageAccounts = @("XYZ", "ABC",................,"NNN") 
-# Set BLT policy on each storage account 
+
+#Set BLT policy on each storage account 
+
 foreach ($storageAccount in $storageAccounts) 
 { 
-# Create a new action object. 
 
+#Create actions 
 $action = Add-AzStorageAccountManagementPolicyAction -InputObject $action -BaseBlobAction TierToCool -daysAfterModificationGreaterThan 30 
 Add-AzStorageAccountManagementPolicyAction -InputObject $action -BaseBlobAction TierToArchive -daysAfterModificationGreaterThan 90
 Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -daysAfterModificationGreaterThan 180 
@@ -29,10 +31,12 @@ Add-AzStorageAccountManagementPolicyAction -InputObject $action -SnapshotAction 
 Add-AzStorageAccountManagementPolicyAction -InputObject $action -BlobVersionAction Delete -daysAfterCreationGreaterThan 90
 
 
+#Set the filter
 $filter = New-AzStorageAccountManagementPolicyFilter -BlobType blockBlob 
-# Create a new rule object. 
 
+# Create a new rule object. 
 $rule1 = New-AzStorageAccountManagementPolicyRule -Name "sample-rule" -Action $action -Filter $filter 
+
 # Create the policy.
 Set-AzStorageAccountManagementPolicy -ResourceGroupName $resourceGroup -StorageAccountName $storageAccount -Rule $rule1    
 }
