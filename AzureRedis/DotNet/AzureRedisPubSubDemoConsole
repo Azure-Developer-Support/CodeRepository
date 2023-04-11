@@ -103,7 +103,7 @@ namespace AzureRedisPubSubDemoConsole
         {
 
             //update the Connection string in the below
-            string cacheConnection = "samitredis.redis.cache.windows.net:6380,password=LaUeW94zb6DmBQZsyeO6HCTxM60KBvIZPENC24T85cw=,ssl=True,abortConnect=False";// Replace this by Azure Redis access Key.
+            string cacheConnection = "";// Replace this by Azure Redis access Key.
             return ConnectionMultiplexer.Connect(cacheConnection);
         });
 
