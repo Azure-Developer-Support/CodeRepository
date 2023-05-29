@@ -20,6 +20,8 @@
 Connect-AzAccount
 
 $storageAccounts = Get-AzStorageAccount
+#Make sure you select the right subscription
+Set-AzContext -SubscriptionId "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 foreach ($storageAccount in $storageAccounts) {
     $storageAccountName = $storageAccount.StorageAccountName
