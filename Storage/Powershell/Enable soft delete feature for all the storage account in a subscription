@@ -18,11 +18,10 @@
 #from the use or distribution of the sample code."
 
 Connect-AzAccount
-
-$storageAccounts = Get-AzStorageAccount
 #Make sure you select the right subscription
 Set-AzContext -SubscriptionId "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
+$storageAccounts = Get-AzStorageAccount
 foreach ($storageAccount in $storageAccounts) {
     $storageAccountName = $storageAccount.StorageAccountName
     $resourceGroupName = $storageAccount.ResourceGroupName
