@@ -1,4 +1,4 @@
-PS script to copy only the conatiner from one storage account to another without data
+PS script to copy only the container from one storage account to another without data
 
  #By using the following materials or sample code you agree to be bound by the license terms below 
 #and the Microsoft Partner Program Agreement the terms of which are incorporated herein by this reference. 
@@ -18,15 +18,15 @@ PS script to copy only the conatiner from one storage account to another without
 
 # Connect to your Azure account
 Connect-AzAccount
-Select-AzSubscription -SubscriptionName "HarshiM"
+Select-AzSubscription -SubscriptionName "XXXXXXX"
 
 # Source Storage Account details
-$storageAccountName = "gpv1har"
-$resourceGroupName = "NewhireRG1"
+$storageAccountName = "<YourSourceStorageAccountName>"
+$resourceGroupName = "<YourSourceResourceGropuName>"
 
 # Destination Storage Account details
-$destinationStorageAccountName = "storeusingclim"
-$destinationResourceGroupName = "NewhireRG1"
+$destinationStorageAccountName = "<YourDestinationStorageAccountName>"
+$destinationResourceGroupName = "<YourDestinationResourceGropuName>"
 
 # Get the storage account context
 $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -AccountName $storageAccountName
