@@ -13,7 +13,7 @@ public class TestWorm
     static string pwd = "storage account key ";
     string ConnectionString = string.Format(CultureInfo.InvariantCulture, "DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net", username, pwd);
     StreamWriter file = new StreamWriter(@"c:\\azureevents.txt", append: true);
-    public void TestAzureWorm()
+    public void TestAzureevtApp()
     {
 
         AzureEventSourceListener listener = new AzureEventSourceListener((e, message) =>
@@ -27,7 +27,7 @@ public class TestWorm
             );
 
         string connectionString = ConnectionString;
-        string containerName = "tdp";
+        string containerName = "XXX";
         BlobContainerClient container = new BlobContainerClient(connectionString, containerName);
         BlobContainerProperties bcp = container.GetProperties();
         BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);                   
