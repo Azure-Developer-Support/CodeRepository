@@ -9,7 +9,7 @@
 //the possibility of such damages.
 
 // This is a sample application wich will work as POC for Pushinf Azure Storage Events to a Text File.
-// The output will of this app will create a file c:\\azureevents.txt . if you wnated to change the file location please change the Line No 26.
+// The output will of this app will create a file c:\\azureevents.txt . if you wnated to change the file location please change the Line StreamWriter file = new StreamWriter(@"c:\\azureevents.txt", append: true);.
 // Nuget Package: 
 //      1) https://www.nuget.org/packages/Azure.Storage.Blobs/12.19.0
 //      2) https://www.nuget.org/packages/Azure.Core 
