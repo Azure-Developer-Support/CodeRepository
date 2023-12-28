@@ -7,6 +7,23 @@
 //the scripts be liable for any damages whatsoever (including without limitation, damages for loss of business profits, business interruption, loss of business 
 //information, or other pecuniary loss) arising out of the use of or inability to use the sample scripts or documentation, even if Microsoft has been advised of
 //the possibility of such damages.
+
+// This is a sample application wich will work as POC for Pushinf Azure Storage Events to a Text File.
+// The output will of this app will create a file c:\\azureevents.txt . if you wnated to change the file location please change the Line No 26.
+// Nuget Package: 
+//      1) https://www.nuget.org/packages/Azure.Storage.Blobs/12.19.0
+//      2) https://www.nuget.org/packages/Azure.Core 
+
+
+
+
+
+using System;
+using System.Globalization;
+using System.IO;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Core.Diagnostics;
 public class TestApp
 {
     static string username = "Storage account";
