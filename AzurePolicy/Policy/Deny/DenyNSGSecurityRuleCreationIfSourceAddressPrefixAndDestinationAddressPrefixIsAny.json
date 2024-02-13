@@ -1,0 +1,87 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "anyOf": [
+        {
+          "allOf": [
+            {
+              "allOf": [
+                {
+                  "field": "type",
+                  "equals": "Microsoft.Network/networkSecurityGroups"
+                }
+              ]
+            },
+            {
+              "count": {
+                "field": "Microsoft.Network/networkSecurityGroups/securityRules[*]",
+                "where": {
+                  "allOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].sourceAddressPrefix",
+                          "in": [
+                            "*",
+                            "ANY"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].destinationAddressPrefix",
+                      "in": [
+                        "*",
+                        "ANY"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "greater": 0
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "allOf": [
+                {
+                  "field": "type",
+                  "equals": "Microsoft.Network/networkSecurityGroups/securityRules"
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "anyOf": [
+                    {
+                      "field": "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
+                      "in": [
+                        "*",
+                        "ANY"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/destinationAddressPrefix",
+                  "in": [
+                    "*",
+                    "ANY"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "deny"
+    }
+  },
+  "parameters": {}
+}
