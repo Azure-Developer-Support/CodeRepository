@@ -26,8 +26,8 @@ $storageAccounts = Get-AzStorageAccount
 foreach ($storageAccount in $storageAccounts) { 
     $resourceId = $storageAccount.Id
     $metrics = Get-AzMetric -ResourceId $resourceId -MetricName "Transactions"  -Aggregation Total -StartTime (Get-Date).AddDays(-$daysThreshold) -EndTime (Get-Date)
-   $totalTransactions = $metrics.Data[0].Total
     $totalTransactions = 0
+    $totalTransactions = $metrics.Data[0].Total
     $metrics.Data | Foreach { $totalTransactions += $_.Total}
     #$totalTransactions 
     $storageAccountName = $storageAccount.StorageAccountName
@@ -57,8 +57,8 @@ foreach ($storageAccount in $storageAccounts) {
 #Please change the transaction type based on your requirements (User/System)
     $dimFilter = New-AzMetricFilter -Dimension TransactionType -Operator eq -Value "User"
     $metrics = Get-AzMetric -ResourceId $resourceId -MetricName "Transactions" -MetricFilter $dimFilter  -Aggregation Total -StartTime (Get-Date).AddDays(-$daysThreshold) -EndTime (Get-Date)
-   $totalTransactions = $metrics.Data[0].Total
     $totalTransactions = 0
+   $totalTransactions = $metrics.Data[0].Total
     $metrics.Data | Foreach { $totalTransactions += $_.Total}
     #$totalTransactions 
     $storageAccountName = $storageAccount.StorageAccountName
