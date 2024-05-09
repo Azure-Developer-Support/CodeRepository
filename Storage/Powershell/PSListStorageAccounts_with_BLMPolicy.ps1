@@ -23,11 +23,11 @@
 
 $subscriptionID = "your subscription ID"
 #Acquire auth token for management.azure.com
-$token = Get-AzureADToken -UserName 'email ID of the user who has permissions to get the details' -TenantID 'tenant ID' -ResourceURI 'https://management.azure.com/'
+$token = Get-AzAccessToken -TenantID 'tenant ID' -ResourceURI 'https://management.azure.com/'
 
-$URI = https://management.azure.com/subscriptions/ + $subscriptionId + "/providers/Microsoft.Storage/storageAccounts?api-version=2021-04-01"
+$URI = "https://management.azure.com/subscriptions/" + $subscriptionId + "/providers/Microsoft.Storage/storageAccounts?api-version=2021-04-01"
 $Method = "GET"
-$headers = @{'Authorization' = $token
+$headers = @{'Authorization' = "Bearer " +$token.Token
 }
 #Invoking REST API to get List of all storage accounts
 $res = Invoke-RestMethod -Uri $URI -Method $Method -Headers $headers
