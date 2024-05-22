@@ -1,8 +1,8 @@
 ﻿# Define the storage account and container name
-$storageAccountName = "somatest"
-$containerName = "test"
-$resourceGroupName = "somaresource"
-$outputCSVPath = "C:\Users\skolanavada\Downloads\testpowershell\container_capacity.csv"
+$storageAccountName = "<<StorageAccountName>>"
+$containerName = "<<ContainerName>>"
+$resourceGroupName = "<<ResourceGroupName>>"
+$outputCSVPath = "<<Path_to_CSV\container_capacity.csv>>"
 
 # Get a reference to the storage account and the context
 $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
