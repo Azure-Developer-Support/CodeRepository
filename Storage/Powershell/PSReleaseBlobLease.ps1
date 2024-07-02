@@ -14,48 +14,45 @@
 'from the use or distribution of the sample code."
 
 # Storage account details
-$storage_account_name = " "
-$storage_account_key = " "
+# Storage account details
+$storage_account_name = "<your-storage-account-name>"
+$storage_account_key = "<your-storage-account-key>"
 
 $context = New-AzStorageContext -StorageAccountName $storage_account_name -StorageAccountKey $storage_account_key
-$container = ' '
+$containers = Get-AzStorageContainer -Context $context
+
+$container = ""
 
 $MaxReturn = 5000
 
 foreach($container in $containers)
 {
-
-$ContinuationToken = $null
-
-do
-{
-
-$blob_list = Get-AzStorageBlob -Container $container -Context $context  -MaxCount $MaxReturn -ContinuationToken $ContinuationToken
-
-Write-Host "Below are the list of Blobs with active leave" -ForegroundColor Red -BackgroundColor Yellow
-## Iterate through each blob
-foreach($blob in $blob_list){
-
-if($blob.BlobProperties.LeaseState -contains 'Leased')
-{
+   $ContinuationToken = $null
+   do
+   {
+     $blob_list = Get-AzStorageBlob -Container $container -Context $context  -MaxCount $MaxReturn -ContinuationToken $ContinuationToken
      
-    Write-Host  "Name:"  $blob.Name  "Lease State:"  $blob.BlobProperties.LeaseState  "Lease Status:"  $blob.BlobProperties.LeaseStatus
-    $blob.ICloudBlob.ReleaseLease() 
-}
+     Write-Host "Below are the list of Blobs with active leave" -ForegroundColor Red -BackgroundColor Yellow
+     
+     ## Iterate through each blob
+     foreach($blob in $blob_list)
+     {
+        if($blob.BlobProperties.LeaseState -contains 'Leased')
+        {
+           Write-Host  "Name:"  $blob.Name  "Lease State:"  $blob.BlobProperties.LeaseState  "Lease Status:"  $blob.BlobProperties.LeaseStatus
+           $blob.ICloudBlob.BreakLease() 
+        }
+     }
 
-}
+     if ($blob_list -ne $null)
+     {
+        $ContinuationToken = $blob_list[$blob_list.Count - 1].ContinuationToken                               
+     }
 
-if ($blob_list -ne $null)
-{
-  $ContinuationToken = $blob_list[$blob_list.Count - 1].ContinuationToken
-                                       
- }
+     if ($ContinuationToken -ne $null)
+     {
+        Write-Verbose ("Blob listing continuation token = {0}" -f $ContinuationToken.NextMarker)
+     }
 
-if ($ContinuationToken -ne $null)
-{
-   Write-Verbose ("Blob listing continuation token = {0}" -f $ContinuationToken.NextMarker)
-}
-
-} while ($ContinuationToken -ne $null)
-
+   } while ($ContinuationToken -ne $null)
 }

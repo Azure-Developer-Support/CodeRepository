@@ -61,6 +61,7 @@ def createDirectoryScopedUserDelegationSAS():
     signedResource = "d" # d denotes directory scope
     signedDirectoryDepth = "1"
     signedSnapshotTime = ""
+    signedEncryptionScope = ""
     rscc = ""
     rscd = ""
     rsce = ""
@@ -86,6 +87,7 @@ def createDirectoryScopedUserDelegationSAS():
                     signedVersion + "\n" + \
                     signedResource + "\n" + \
                     signedSnapshotTime + "\n" + \
+                    signedEncryptionScope + "\n" + \
                     rscc + "\n" + \
                     rscd + "\n" + \
                     rsce + "\n" + \

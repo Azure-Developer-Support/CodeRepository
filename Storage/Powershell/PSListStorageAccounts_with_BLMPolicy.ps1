@@ -17,17 +17,14 @@
 #suppliers from and against any third party claims or lawsuits, including attorneysâ€™ fees, that arise or result 
 #from the use or distribution of the sample code."
 
-#We need AzureServicePrincipalAccount module to run the Get-AzureADToken command.
-#Install-Module AzureServicePrincipalAccount
-#Import-Module AzureServicePrincipalAccount
-
+Connect-AzAccount
 $subscriptionID = "your subscription ID"
 #Acquire auth token for management.azure.com
-$token = Get-AzureADToken -UserName 'email ID of the user who has permissions to get the details' -TenantID 'tenant ID' -ResourceURI 'https://management.azure.com/'
+$token = $token = Get-AzAccessToken -TenantID 'tenant ID' -ResourceURI 'https://management.azure.com/'
 
-$URI = https://management.azure.com/subscriptions/ + $subscriptionId + "/providers/Microsoft.Storage/storageAccounts?api-version=2021-04-01"
+$URI = "https://management.azure.com/subscriptions/" + $subscriptionId + "/providers/Microsoft.Storage/storageAccounts?api-version=2021-04-01"
 $Method = "GET"
-$headers = @{'Authorization' = $token
+$headers = @{'Authorization' = "Bearer" + $token.Token
 }
 #Invoking REST API to get List of all storage accounts
 $res = Invoke-RestMethod -Uri $URI -Method $Method -Headers $headers
