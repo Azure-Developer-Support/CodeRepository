@@ -19,17 +19,17 @@ $Body =@"
 <Tags>  
     <TagSet>  
         <Tag>  
-            <Key>tag-name-1</Key>  
-            <Value>tag-value-1</Value>  
+            <Key>Tag Name</Key>  
+            <Value>Tag Value</Value>  
         </Tag>  
     </TagSet>  
 </Tags>
 "@
 
 $headers = @{
-    'x-ms-date' = 'Mon, 08 Jul 2024 07:40:35 GMT'
-    'x-ms-version' = '2024-08-04'
-    'Content-Length' = '207'
+    'x-ms-date' = 'Date In UTC'
+    'x-ms-version' = 'Storage service version' #for e.g.- 2024-08-04
+    'Content-Length' = 'Content Lenght'  #for e.g.- 207
     'Content-Type' = 'application/xml;charset=UTF-8'
 }
 
