@@ -1,4 +1,4 @@
-#The below PowerShell script helps to find the StorageAccount Transcation count in last 24hrs, BlobUsed capacity details along with the BLM Status at the subscription level
+#The below PowerShell script helps to find the StorageAccount Transaction count in last 24hrs, BlobUsed capacity details along with the BLM Status at the subscription level
 
 #DISCLAIMER:
 #By using the following materials or sample code you agree to be bound by the license terms below and the Microsoft Partner Program Agreement the terms of which are incorporated herein by this reference. 
