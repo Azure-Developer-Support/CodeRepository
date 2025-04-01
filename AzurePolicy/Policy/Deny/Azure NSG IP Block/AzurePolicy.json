@@ -1,0 +1,57 @@
+{
+  "mode": "All",
+  "description":"This policy would deny the rule creation in Network Security Groups where in the source or the destination address is particular IP ( 0.0.0.0) in this case. Matching all the conditions for the direction of rule, access level and the address prefix, deny effect would be triggered.",
+  "metadata":{
+    "author":"Hakashya"
+  },
+  "policyRule": {
+    "if": {
+      "allof": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/networkSecurityGroups/securityRules"
+        },
+        {
+          "anyof": [
+            {
+              "allOf": [
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/direction",
+                  "equals": "Inbound"
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
+                  "equals": "0.0.0.0"
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/access",
+                  "equals": "Allow"
+                }
+              ]
+            },
+            {
+              "allof": [
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/direction",
+                  "equals": "Outbound"
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/destinationAddressPrefix",
+                  "equals": "0.0.0.0"
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/access",
+                  "equals": "Allow"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "deny"
+    }
+  },
+  "parameters": {}
+}

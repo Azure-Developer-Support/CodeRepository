@@ -1,0 +1,49 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/networkSecurityGroups"
+        },
+        {
+          "count": {
+            "field": "Microsoft.Network/networkSecurityGroups/securityRules[*]",
+            "where": {
+              "anyOf": [
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].description",
+                  "exists": false
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].description",
+                  "equals": ""
+                }
+              ]
+            }
+          },
+          "greater": 0
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "Audit",
+        "Disabled",
+        "Deny"
+      ],
+      "defaultValue": "Deny"
+    }
+  }
+}

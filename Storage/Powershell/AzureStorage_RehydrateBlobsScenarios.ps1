@@ -102,23 +102,32 @@ Login-AzAccount
 $sa = Get-AzStorageAccount -Name $StorageAccountName -ResourceGroupName $ResourceGroup
 
 do
- {
+{
       
-     $blobs = Get-AzStorageBlob -Prefix $FolderPath -Container $ContainerName -Context $sa.Context -MaxCount $MaxReturn -ContinuationToken $Token | Where-Object{$_.ICloudBlob.Properties.StandardBlobTier -eq "Archive"}
-
-     $Total += $blobs.Count;
-     if($blobs.Length -le 0) { Break;}
-
-     $Token = $blobs[$blobs.Count -1].ContinuationToken;
-     foreach($blob in $blobs){
+     $blobs = Get-AzStorageBlob -Prefix $FolderPath  -Container $ContainerName -Context $sa.Context -MaxCount $MaxReturn -ContinuationToken $Token 
+     
+     if($blobs.Count -gt 0) 
+   {
     
+    $Token = $blobs[$blobs.Count -1].ContinuationToken;
+    
+    $nonarchivedblobs = $blobs | Where-Object{$_.ICloudBlob.Properties.StandardBlobTier -eq "Archive" -and [String]::IsNullOrWhiteSpace($_.BlobProperties.ArchiveStatus)}
+   
+    $Total += $nonarchivedblobs.Count;
+    if($nonarchivedblobs.Count -gt 0)
+    {
+    
+     foreach($blob in $nonarchivedblobs)
+       {
+         
         #You can use Hot instead of cool if you wish to move the blobs to Hot tier.
-        $blob.ICloudBlob.SetStandardBlobTier("Cool"); 
-    }
+        $blob.ICloudBlob.SetStandardBlobTier("Cool");
 
- }
- While ($Token -ne $Null)
-
+      }
+     }
+   }
+}
+While ($Token -ne $Null)
  Echo "Total $Total blobs are being rehydrated."
  
  ##End of scripts
